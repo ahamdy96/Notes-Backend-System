@@ -16,7 +16,7 @@ const jwtVerifiy = (key, userModel) => {
             if (user) {
                 done(null, user)
             } else {
-                done(null, false)
+                done(null, false, { message: 'invalid token' })
             }
         } catch (error) {
             done(error)
