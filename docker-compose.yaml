@@ -17,13 +17,13 @@ services:
   notes:
     image: node:12-alpine
     container_name: notes
-    command: sh -c "node --version && npm install && npm start"
+    command: sh -c "npm install && npm start"
     working_dir: /notes
     volumes:
       - ./notes:/notes
     environment:
       secret: mysecret
-      db_string: mongodb://host.docker.internal/l27017
+      db_string: mongodb://host.docker.internal:l27017
       port: 4001
   authentication:
     image: node:12-alpine
@@ -34,7 +34,7 @@ services:
       - ./authentication:/authentication
     environment:
       secret: mysecret
-      db_string: mongodb://host.docker.internal/l27017
+      db_string: mongodb://host.docker.internal:l27017
       port: 4002
   notessearch:
     image: node:12-alpine
@@ -44,5 +44,5 @@ services:
     volumes:
       - ./notes_search:/notes_search
     environment:
-      db_string: mongodb://host.docker.internal/l27017
+      db_string: mongodb://host.docker.internal:l27017
       port: 4003
