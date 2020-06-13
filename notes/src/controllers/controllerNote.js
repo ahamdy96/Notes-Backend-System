@@ -50,7 +50,7 @@ const createNote = async (req, res, next) => {
         if (error instanceof Array)
             res.status(422).send({ 'message': error })
         else
-            res.status(401).send({ 'message': error.message })
+            res.status(401).send({ message: error.message })
     }
 }
 
