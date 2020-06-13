@@ -7,8 +7,18 @@ mongoose.set('useCreateIndex', true);
 const userSchema = schema({
     username: {
         type: String,
-        required: true,
-        unique: true
+        unique: true,
+        sparse: true
+    },
+    email: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
+    phone: {
+        type: String,
+        unique: true,
+        sparse: true
     },
     password: {
         type: String,

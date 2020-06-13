@@ -1,5 +1,5 @@
 import passport from 'passport'
-import passportLocal from 'passport-local'
+import passportCustom from 'passport-custom'
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto'
 import sendgrid from '@sendgrid/mail'
@@ -8,7 +8,87 @@ import { userModel, verificationTokenModel } from '../models/index.js'
 import { sendgridApiKey, emailAddress } from '../utils/index.js'
 
 
-const localStrategy = passportLocal.Strategy;
+const customStrategy = passportCustom.Strategy;
+
+passport
+    .use('register',
+        new customStrategy(async (req, done) => {
+            try {
+
+                const params = extractParameters(req)
+
+                const query = []
+
+                Object.keys(params).forEach((field) => {
+                    if (params[field]) {
+                        query.push({ [field]: params[field] })
+                    }
+                })
+
+                const doc = await userModel.findOne({ $or: query }).lean().exec();
+
+                if (doc) {
+                    Object.keys(doc).forEach((field) => {
+                        if (doc[field] === params[field]) {
+                            return done(null, false, { message: `${field} is taken` })
+                        }
+                    })
+                }
+
+                let user = new userModel(params)
+
+                const salt = await bcrypt.genSalt(10);
+                const hash = await bcrypt.hash(user.password, salt)
+                user.password = hash;
+
+                await user.save();
+
+                if (user.email)
+                    await verifyEmail(user)
+
+                user = user.toObject();
+                delete user.password
+
+                return done(null, user)
+
+            } catch (error) {
+                return done(error)
+            }
+        }
+        ))
+    .use('login',
+        new customStrategy(async (req, done) => {
+            try {
+
+                const params = extractParameters(req)
+
+                const query = {}
+
+                Object.keys(params).forEach((field) => {
+                    if (field !== 'password')
+                        query[field] = params[field]
+                })
+
+                const doc = await userModel.findOne(query).lean().exec();
+
+                if (!doc)
+                    return done(null, false, { message: 'user not found' })
+
+                const isMatched = await bcrypt.compare(params.password, doc.password)
+
+                if (isMatched) {
+                    delete doc.password
+                    return done(null, doc)
+                } else {
+                    return done(null, false, { message: 'wrong password' })
+                }
+
+            } catch (error) {
+                return done(error)
+            }
+        }
+        ))
+
 
 const verifyEmail = async (user) => {
     try {
@@ -34,99 +114,23 @@ const verifyEmail = async (user) => {
     }
 }
 
-const transformUser = (doc, method) => {
-    switch (method) {
-        case 'phone':
-            doc.phone = doc.username
-            delete doc.username
-            break;
-        case 'email':
-            doc.email = doc.username
-            delete doc.username
-            break;
+const extractParameters = (req) => {
+    const { username, email, phone, password } = req.body
+
+    const params = {
+        username: username,
+        email: email,
+        phone: phone,
+        password: password
     }
-    delete doc.password
+
+    Object.keys(params).forEach((field) => {
+        if (params[field] === undefined)
+            delete params[field]
+    })
+
+    return params;
 }
 
-
-const registerVerify = async (username, password, done, method) => {
-    try {
-        const doc = await userModel.findOne({ username: username }, { __v: 0 }).exec();
-        if (doc) return done(null, false, { message: 'user already exists, login instead' })
-
-        const user = new userModel({
-            username: username,
-            password: password
-        })
-
-        const salt = await bcrypt.genSalt(10);
-        const hash = await bcrypt.hash(user.password, salt)
-        user.password = hash;
-
-        await user.save();
-        const createdUser = await userModel.findOne({ username: username }, { __v: 0 })
-            .lean()
-            .exec();
-
-
-        if (method === 'email')
-            await verifyEmail(user)
-
-        transformUser(createdUser, method);
-
-        return done(null, createdUser)
-
-    } catch (error) {
-        return done(error)
-    }
-}
-
-const loginVerify = async (username, password, done, method) => {
-    try {
-        const doc = await userModel.findOne({ username: username }, { __v: 0 })
-            .lean()
-            .exec();
-
-        if (!doc) return done(null, false, { message: 'user not found' })
-
-        const isMatched = await bcrypt.compare(password, doc.password)
-
-        transformUser(doc, method);
-
-        if (isMatched) {
-            return done(null, doc)
-        } else {
-            return done(null, false, { message: 'wrong password' })
-        }
-
-    } catch (error) {
-        return done(error)
-    }
-}
-
-
-passport
-    .use('register_username',
-        new localStrategy(
-            (username, password, done) => registerVerify(username, password, done, 'username')))
-    .use('login_username',
-        new localStrategy(
-            (username, password, done) => loginVerify(username, password, done, 'username')))
-    .use('register_phone',
-        new localStrategy(
-            { usernameField: 'phone' },
-            (username, password, done) => registerVerify(username, password, done, 'phone')))
-    .use('login_phone',
-        new localStrategy(
-            { usernameField: 'phone' },
-            (username, password, done) => loginVerify(username, password, done, 'phone')))
-    .use('register_email',
-        new localStrategy(
-            { usernameField: 'email' },
-            (username, password, done) => registerVerify(username, password, done, 'email')))
-    .use('login_email',
-        new localStrategy(
-            { usernameField: 'email' },
-            (username, password, done) => loginVerify(username, password, done, 'email')))
 
 export { passport }

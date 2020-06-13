@@ -15,7 +15,6 @@ const checkValidation = async (req) => {
 
 }
 
-
 const authenticate = async (req, res, next, method) => {
     return new Promise((resolve, reject) => {
         passport.authenticate(method, { session: false }, (err, doc, info) => {
@@ -30,12 +29,11 @@ const authenticate = async (req, res, next, method) => {
     })
 }
 
-
-const registerUser = async (req, res, next, method) => {
+const registerUser = async (req, res, next) => {
     try {
         await checkValidation(req);
 
-        const user = await authenticate(req, res, next, method)
+        const user = await authenticate(req, res, next, 'register')
         const token = generateJWT({ user })
 
         res.json({
@@ -51,11 +49,11 @@ const registerUser = async (req, res, next, method) => {
     }
 }
 
-const loginUser = async (req, res, next, method) => {
+const loginUser = async (req, res, next) => {
     try {
         await checkValidation(req);
 
-        const user = await authenticate(req, res, next, method)
+        const user = await authenticate(req, res, next, 'login')
         const token = generateJWT(user)
 
         res.json({
@@ -71,20 +69,10 @@ const loginUser = async (req, res, next, method) => {
     }
 }
 
-const registerUserNormal = async (req, res, next) => registerUser(req, res, next, 'register_username')
-const loginUserNormal = async (req, res, next) => loginUser(req, res, next, 'login_username')
-const registerUserPhone = async (req, res, next) => registerUser(req, res, next, 'register_phone')
-const loginUserPhone = async (req, res, next) => loginUser(req, res, next, 'login_phone')
-const registerUserEmail = async (req, res, next) => registerUser(req, res, next, 'register_email')
-const loginUserEmail = async (req, res, next) => loginUser(req, res, next, 'login_email')
 
 const userController = {
-    registerUserNormal,
-    loginUserNormal,
-    registerUserPhone,
-    loginUserPhone,
-    registerUserEmail,
-    loginUserEmail,
+    registerUser,
+    loginUser,
     validateUser
 }
 
