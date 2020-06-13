@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      # - ./nginx/nginx.conf:/ng
+      # - ./nginx/error.log:/err
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      # - ./nginx/error.log:/var/log/nginx/error.log
+    ports:
+      - 4000:4000
+    depends_on:
+      - notes
+      - authentication
+      - notessearch
+  notes:
+    image: node:12-alpine
+    container_name: notes
+    command: sh -c "node --version && npm install && npm start"
+    working_dir: /notes
+    volumes:
+      - ./notes:/notes
+    environment:
+      secret: mysecret
+      db_string: mongodb://host.docker.internal/l27017
+      port: 4001
+  authentication:
+    image: node:12-alpine
+    container_name: authentication
+    command: sh -c "npm install && npm start"
+    working_dir: /authentication
+    volumes:
+      - ./authentication:/authentication
+    environment:
+      secret: mysecret
+      db_string: mongodb://host.docker.internal/l27017
+      port: 4002
+  notessearch:
+    image: node:12-alpine
+    container_name: notessearch
+    command: sh -c "npm install && npm start"
+    working_dir: /notes_search
+    volumes:
+      - ./notes_search:/notes_search
+    environment:
+      db_string: mongodb://host.docker.internal/l27017
+      port: 4003
