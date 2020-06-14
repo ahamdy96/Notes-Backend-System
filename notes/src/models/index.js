@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 import { noteModel } from './modelNote.js'
 import { userModel } from './modelUser.js'
+import { fbUserModel } from './modelFBUser.js'
 import { dbString } from '../utils/index.js'
 
 
@@ -20,4 +21,4 @@ db.on('error', (error) => {
     process.exit(-1);
 })
 
-export { noteModel, userModel };
+export { noteModel, userModel, fbUserModel };

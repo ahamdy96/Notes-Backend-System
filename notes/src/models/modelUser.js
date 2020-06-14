@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 const schema = mongoose.Schema;
 
 mongoose.set('useCreateIndex', true);
@@ -6,8 +7,18 @@ mongoose.set('useCreateIndex', true);
 const userSchema = schema({
     username: {
         type: String,
-        required: true,
-        unique: true
+        unique: true,
+        sparse: true
+    },
+    email: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
+    phone: {
+        type: String,
+        unique: true,
+        sparse: true
     },
     password: {
         type: String,
@@ -22,5 +33,3 @@ const userSchema = schema({
 const userModel = mongoose.model('user', userSchema);
 
 export { userModel }
-
-
