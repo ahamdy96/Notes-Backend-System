@@ -21,10 +21,8 @@ services:
     working_dir: /notes
     volumes:
       - ./notes:/notes
-    environment:
-      secret: mysecret
-      db_string: mongodb://host.docker.internal:l27017
-      port: 4001
+    env_file: 
+      - ./notes/docker_compose.env
   authentication:
     image: node:12-alpine
     container_name: authentication
@@ -32,17 +30,15 @@ services:
     working_dir: /authentication
     volumes:
       - ./authentication:/authentication
-    environment:
-      secret: mysecret
-      db_string: mongodb://host.docker.internal:l27017
-      port: 4002
-  notessearch:
+    env_file: 
+      - ./authentication/docker_compose.env
+    notessearch:
     image: node:12-alpine
     container_name: notessearch
     command: sh -c "npm install && npm start"
     working_dir: /notes_search
     volumes:
       - ./notes_search:/notes_search
-    environment:
-      db_string: mongodb://host.docker.internal:l27017
-      port: 4003
+    env_file: 
+      - ./notes_search/docker_compose.env
+  
