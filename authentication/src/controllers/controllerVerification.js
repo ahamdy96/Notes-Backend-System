@@ -1,6 +1,7 @@
-import { validateVerificationToken } from 'validation'
+import { validateVerificationToken, validationResult } from 'validation'
 import { verificationTokenModel, userModel } from '../models/index.js'
-import { validationResult } from 'validation'
+import { passport, generateJWT } from '../config/index.js'
+
 
 const checkValidation = async (req) => {
     return new Promise((resolve, reject) => {
@@ -41,6 +42,37 @@ const verifyToken = async (req, res, next) => {
     }
 }
 
-const verificationController = { verifyToken, validateVerificationToken }
+const authenticate = async (req, res, next, method) => {
+    return new Promise((resolve, reject) => {
+        passport.authenticate(method, { session: false }, (err, doc, info) => {
+            if (err) {
+                reject(err)
+            } if (info && info.message) {
+                reject(info)
+            } else {
+                resolve(doc);
+            }
+        })(req, res, next)
+    })
+}
+
+const facebookCallback = async (req, res, next) => {
+    try {
+        const facebookUser = await authenticate(req, res, next, 'facebook');
+
+        const token = generateJWT(facebookUser)
+
+        res.json({
+            token: token,
+            user: facebookUser
+        })
+
+    } catch (error) {
+        console.log(error)
+        res.status(422).send({ 'message': 'Unsuccessful' })
+    }
+}
+
+const verificationController = { verifyToken, validateVerificationToken, facebookCallback }
 
 export { verificationController }

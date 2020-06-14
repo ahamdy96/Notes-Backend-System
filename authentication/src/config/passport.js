@@ -1,14 +1,22 @@
 import passport from 'passport'
 import passportCustom from 'passport-custom'
+import passportFacebook from "passport-facebook"
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto'
 import sendgrid from '@sendgrid/mail'
 
-import { userModel, verificationTokenModel } from '../models/index.js'
-import { sendgridApiKey, emailAddress } from '../utils/index.js'
+import { userModel, fbUserModel, verificationTokenModel } from '../models/index.js'
+import {
+    sendgridApiKey,
+    emailAddress,
+    clientID,
+    clientSecret,
+    facebookCallbackURL
+} from '../utils/index.js'
 
 
 const customStrategy = passportCustom.Strategy;
+const facebookStrategy = passportFacebook.Strategy;
 
 passport
     .use('register',
@@ -86,33 +94,33 @@ passport
             } catch (error) {
                 return done(error)
             }
-        }
-        ))
-
-
-const verifyEmail = async (user) => {
-    try {
-        const random = crypto.randomBytes(32).toString('hex')
-        const token = verificationTokenModel({
-            userId: user._id,
-            token: random
         })
+    ).use('facebook', new facebookStrategy({
+        clientID: clientID,
+        clientSecret: clientSecret,
+        callbackURL: facebookCallbackURL,
+        profileFields: ['id', 'emails']
+    }, async (accessToken, refreshToken, profile, done) => {
+        try {
+            const { id, emails } = profile;
+            const user = {
+                fbId: id,
+                email: emails[0].value,
+                accessToken: accessToken
+            }
+            const fbUser = await fbUserModel.findOneAndUpdate({ fbId: id }, user, {
+                upsert: true,
+                new: true
+            }).lean().exec();
 
-        sendgrid.setApiKey(sendgridApiKey);
-        const msg = {
-            to: user.username,
-            from: emailAddress,
-            subject: 'Verify your account!',
-            text: `Greetings,\n\nThis is an email verification test, please enter the link below to verify your email\nhttp://localhost:4000/authentication/verify?token=${random}\n\nRegards,\nAhmed Hamdy`
-        };
+            delete fbUser.fbId;
 
-        sendgrid.send(msg);
+            done(null, fbUser)
 
-        await token.save()
-    } catch (error) {
-        return Promise.reject(error)
-    }
-}
+        } catch (error) {
+            done(error)
+        }
+    }))
 
 const extractParameters = (req) => {
     const { username, email, phone, password } = req.body
@@ -130,6 +138,30 @@ const extractParameters = (req) => {
     })
 
     return params;
+}
+
+const verifyEmail = async (user) => {
+    try {
+        const random = crypto.randomBytes(32).toString('hex')
+        const token = verificationTokenModel({
+            userId: user._id,
+            token: random
+        })
+
+        sendgrid.setApiKey(sendgridApiKey);
+        const msg = {
+            to: user.email,
+            from: emailAddress,
+            subject: 'Verify your account!',
+            text: `Greetings,\n\nThis is an email verification test, please enter the link below to verify your email\nhttp://localhost:4000/authentication/verify?token=${random}\n\nRegards,\nAhmed Hamdy`
+        };
+
+        await sendgrid.send(msg);
+
+        await token.save()
+    } catch (error) {
+        return Promise.reject(error)
+    }
 }
 
 

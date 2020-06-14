@@ -12,5 +12,6 @@ userRouter
     .post('/login',
         userController.validateUser(),
         userController.loginUser)
-
+    .get('/facebook',
+        userController.facebookAuth)
 export { userRouter }

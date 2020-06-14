@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 import { userModel } from './modelUser.js'
+import { fbUserModel } from './modelFBUser.js'
 import { verificationTokenModel } from './modelVerificationToken.js'
 import { dbString } from '../utils/index.js'
 
@@ -20,4 +21,4 @@ db.on('error', (error) => {
     process.exit(-1);
 })
 
-export { userModel, verificationTokenModel }
+export { userModel, fbUserModel, verificationTokenModel }

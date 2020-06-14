@@ -69,10 +69,24 @@ const loginUser = async (req, res, next) => {
     }
 }
 
+const facebookAuth = async (req, res, next) => {
+    try {
+
+        await authenticate(req, res, next, 'facebook')
+    
+    } catch (error) {
+        console.log(error)
+        if (error instanceof Array)
+            res.status(422).send({ 'message': error })
+        else
+            res.status(401).send({ 'message': error.message })
+    }
+}
 
 const userController = {
     registerUser,
     loginUser,
+    facebookAuth,
     validateUser
 }
 

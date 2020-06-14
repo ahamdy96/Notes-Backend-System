@@ -1,4 +1,22 @@
-import { key,  emailAddress, port, dbString, sendgridApiKey } from './environment.js'
+import {
+    key,
+    emailAddress,
+    port,
+    dbString,
+    sendgridApiKey,
+    clientID,
+    clientSecret,
+    facebookCallbackURL
+} from './environment.js'
 
 
-export { port, emailAddress, key, dbString, sendgridApiKey }
+export {
+    port,
+    emailAddress,
+    key,
+    dbString,
+    sendgridApiKey,
+    clientID,
+    clientSecret,
+    facebookCallbackURL
+}
