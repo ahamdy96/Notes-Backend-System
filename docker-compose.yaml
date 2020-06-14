@@ -32,7 +32,7 @@ services:
       - ./authentication:/authentication
     env_file: 
       - ./authentication/docker_compose.env
-    notessearch:
+  notessearch:
     image: node:12-alpine
     container_name: notessearch
     command: sh -c "npm install && npm start"
