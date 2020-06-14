@@ -15,5 +15,5 @@ app.use(passport.initialize());
 app.use('/', noteRouter)
 
 app.listen(port, () => {
-    console.log(`data management server started and is listening to ${port}`);
+    console.log(`notes server started and is listening to port ${port}`);
 })

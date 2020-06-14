@@ -13,5 +13,5 @@ app.use(bodyParser.json());
 app.use('/notes', searchRouter)
 
 app.listen(port, () => {
-    console.log(`data management server started and is listening to ${port}`);
+    console.log(`notessearch server started and is listening to port ${port}`);
 })
