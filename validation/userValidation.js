@@ -16,7 +16,7 @@ const validateUser = () => {
             })
             .bail()
             .if((value, { req, path, location }) => {
-                return req.body.username
+                return (req.body.username === '' || req.body.username)
             })
             .isLength({ min: 4, max: 32 })
             .withMessage('username must be 4 characters minimum'),
@@ -31,7 +31,7 @@ const validateUser = () => {
             })
             .bail()
             .if((value, { req, path, location }) => {
-                return req.body.phone
+                return (req.body.phone === '' || req.body.phone )
             })
             .matches('^(010|011|012|015)\\d{8}$')
             .withMessage('phone number must contains 11 digits beginning with 010, 011, 012 or 015'),
@@ -46,7 +46,7 @@ const validateUser = () => {
             })
             .bail()
             .if((value, { req, path, location }) => {
-                return req.body.email
+                return (req.body.email === '' || req.body.email )
             })
             .isEmail()
             .withMessage('invalid email'),
