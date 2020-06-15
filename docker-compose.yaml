@@ -15,7 +15,7 @@ services:
       - authentication
       - notessearch
   notes:
-    image: node:12-alpine
+    image: mhart/alpine-node:14.4.0
     container_name: notes
     command: sh -c "npm install && npm start"
     working_dir: /notes
@@ -24,7 +24,7 @@ services:
     env_file: 
       - ./notes/docker_compose.env
   authentication:
-    image: node:12-alpine
+    image: mhart/alpine-node:14.4.0
     container_name: authentication
     command: sh -c "npm install && npm start"
     working_dir: /authentication
@@ -33,7 +33,7 @@ services:
     env_file: 
       - ./authentication/docker_compose.env
   notessearch:
-    image: node:12-alpine
+    image: mhart/alpine-node:14.4.0
     container_name: notessearch
     command: sh -c "npm install && npm start"
     working_dir: /notes_search
