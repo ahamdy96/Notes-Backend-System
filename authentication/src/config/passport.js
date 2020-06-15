@@ -4,6 +4,8 @@ import passportFacebook from "passport-facebook"
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import sendgrid from '@sendgrid/mail'
+import fs from 'fs'
+import path from 'path'
 
 import { userModel, fbUserModel, verificationTokenModel } from '../models/index.js'
 import {
@@ -201,16 +203,22 @@ const verifyEmail = async (user) => {
             token: random
         })
 
+        // load html emailTemplate
+        const emailTemplate = fs.readFileSync(
+            path.resolve('./src/utils/', 'emailTemplate.html'), 'utf8'
+        )
+
+        // replace keys with values
+        const email = emailTemplate
+        .replace('emailVerificationCallback', emailVerificationCallback)
+        .replace('verificationToken', random)
+        
         // build up the email message
         const message = {
             to: user.email,
             from: emailAddress,
             subject: 'Verify your account!',
-            text: `Greetings,\n\n\
-            This is an email verification test, please enter the link below to verify your email\n\
-            ${emailVerificationCallback}/authentication/verify?token=${random}\n\n\
-            Regards,\n\
-            Ahmed Hamdy`
+            html: email
         }
 
         // send the verification email
