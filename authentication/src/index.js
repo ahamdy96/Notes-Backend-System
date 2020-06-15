@@ -6,15 +6,19 @@ import { userRouter, verificationRouter } from './routes/index.js'
 import { port } from './utils/index.js'
 
 
-const app = express();
+// create express application 
+const app = express()
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+// configure express
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
 app.use(passport.initialize())
 
+// set express routes
 app.use('/', userRouter)
 app.use('/verify', verificationRouter)
 
+// start server
 app.listen(port, () => {
-    console.log(`authentication server started and is listening to port ${port}`);
+    console.log(`authentication server started and is listening to port ${port}`)
 })

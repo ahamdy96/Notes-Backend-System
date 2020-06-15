@@ -6,7 +6,8 @@ import {
     sendgridApiKey,
     clientID,
     clientSecret,
-    facebookCallbackURL
+    facebookCallbackURL,
+    emailVerificationCallback
 } from './environment.js'
 
 
@@ -18,5 +19,6 @@ export {
     sendgridApiKey,
     clientID,
     clientSecret,
-    facebookCallbackURL
+    facebookCallbackURL,
+    emailVerificationCallback
 }

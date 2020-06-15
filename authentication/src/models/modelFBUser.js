@@ -1,8 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
-const schema = mongoose.Schema;
 
-mongoose.set('useCreateIndex', true);
+const schema = mongoose.Schema
 
 const fbUserSchema = schema({
     email: {
@@ -19,7 +18,7 @@ const fbUserSchema = schema({
     }
 }, { timestamps: true })
 
-const fbUserModel = mongoose.model('fbUser', fbUserSchema);
+const fbUserModel = mongoose.model('fbUser', fbUserSchema)
 
 export { fbUserModel }
 

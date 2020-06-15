@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 import { noteModel } from './modelNote.js'
 import { userModel } from './modelUser.js'
@@ -6,19 +6,23 @@ import { fbUserModel } from './modelFBUser.js'
 import { dbString } from '../utils/index.js'
 
 
-mongoose.set('useUnifiedTopology', true);
+// configure mongoose options
+mongoose.set('useUnifiedTopology', true)
+mongoose.set('useCreateIndex', true)
+mongoose.set('useFindAndModify', false)
 
-mongoose.connect(dbString, { useNewUrlParser: true, useFindAndModify: false });
+// connect to database
+mongoose.connect(dbString, { useNewUrlParser: true })
 
-const db = mongoose.connection;
+const db = mongoose.connection
 
 db.once('open', () => {
-    console.log('Connected to database!');
+    console.log('Connected to database!')
 })
 
 db.on('error', (error) => {
-    console.log('[X] ERROR conecting to DB:', error);
-    process.exit(-1);
+    console.log('[X] ERROR conecting to DB:', error)
+    process.exit(-1)
 })
 
-export { noteModel, userModel, fbUserModel };
+export { noteModel, userModel, fbUserModel }

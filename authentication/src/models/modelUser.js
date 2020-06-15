@@ -1,8 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
-const schema = mongoose.Schema;
 
-mongoose.set('useCreateIndex', true);
+const schema = mongoose.Schema
 
 const userSchema = schema({
     username: {
@@ -30,7 +29,7 @@ const userSchema = schema({
     }
 }, { timestamps: true })
 
-const userModel = mongoose.model('user', userSchema);
+const userModel = mongoose.model('user', userSchema)
 
 export { userModel }
 

@@ -7,7 +7,7 @@ import { validateSearch } from './searchValidation.js'
 import { validateVerificationToken } from './verificationTokenValidation.js'
 
 
-const { validationResult } = expressValidator;
+const { validationResult } = expressValidator
 
 export {
     validateUser,

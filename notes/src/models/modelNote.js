@@ -1,8 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
-const schema = mongoose.Schema;
 
-mongoose.set('useCreateIndex', true);
+const schema = mongoose.Schema
 
 const noteSchema = schema({
     author: {
@@ -13,9 +12,9 @@ const noteSchema = schema({
     body: { type: String, required: true },
 },
     { timestamps: true }
-);
+)
 
 
-const noteModel = mongoose.model('note', noteSchema);
+const noteModel = mongoose.model('note', noteSchema)
 
-export { noteModel };
+export { noteModel }

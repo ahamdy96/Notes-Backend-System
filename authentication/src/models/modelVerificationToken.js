@@ -1,8 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
-const schema = mongoose.Schema;
 
-mongoose.set('useCreateIndex', true);
+const schema = mongoose.Schema
 
 const verificationTokenSchema = schema({
     userId: {
@@ -16,7 +15,7 @@ const verificationTokenSchema = schema({
     }
 }, { timestamps: true })
 
-const verificationTokenModel = mongoose.model('verificationToken', verificationTokenSchema);
+const verificationTokenModel = mongoose.model('verificationToken', verificationTokenSchema)
 
 export { verificationTokenModel }
 

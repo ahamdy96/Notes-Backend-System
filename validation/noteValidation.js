@@ -1,61 +1,74 @@
 import expressValidator from 'express-validator'
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
-const { body, query } = expressValidator;
+const { body, query } = expressValidator
 
-
+// a function to validate notes parameters 
 const validateNote = (route) => {
     switch (route) {
         case 'retrieve':
             return [
-                query('id', 'no note Id found!').exists({ checkFalsy: true, checkNull: true })
+                // ensure id exists and is not false like "", 0, false or null
+                query('id', 'no note Id found!').exists({ checkFalsy: true })
+                    // stop running validations if any of the previous ones have failed
                     .bail()
+                    // ensure id is a valid mongoose object id
                     .custom(value => {
                         if (!mongoose.Types.ObjectId.isValid(value))
-                            return Promise.reject('id is not in the correct format!')
+                            throw new Error('id is not in the correct format!')
                         else
-                            return Promise.resolve();
+                            return true
                     })
             ]
-            break;
+            break
         case 'create':
             return [
-                body('title', 'no note title found!').exists({ checkNull: true }),
-                body('body', 'no note body found!').exists({ checkNull: true })
+                // ensure title exists and is not false like "", 0, false or null
+                body('title', 'no note title found!').exists({ checkFalsy: true }),
+                // ensure body exists and is not false like "", 0, false or null
+                body('body', 'no note body found!').exists({ checkFalsy: true })
             ]
-            break;
+            break
         case 'update':
             return [
-                body('id', 'no note Id found!').exists({ checkFalsy: true, checkNull: true })
+                // ensure id exists and is not false like "", 0, false or null
+                body('id', 'no note Id found!').exists({ checkFalsy: true })
+                    // stop running validations if any of the previous ones have failed
                     .bail()
+                    // ensure id is a valid mongoose object id
                     .custom(value => {
                         if (!mongoose.Types.ObjectId.isValid(value))
-                            return Promise.reject('id is not in the correct format!')
+                            throw new Error('id is not in the correct format!')
                         else
-                            return Promise.resolve();
+                            return true
 
                     })
                 ,
+                // ensure title exists and is not false like "", 0, false or null
                 body('title', 'no note title found').exists({ checkNull: true }),
+                // ensure body exists and is not false like "", 0, false or null
                 body('body', 'no note Id found!').exists({ checkNull: true })
             ]
-            break;
+            break
         case 'delete':
             return [
+                // ensure id exists and is not false like "", 0, false or null
                 query('id', 'no note Id found!').exists({ checkFalsy: true, checkNull: true })
+                    // stop running validations if any of the previous ones have failed
                     .bail()
+                    // ensure id is a valid mongoose object id
                     .custom(value => {
                         if (!mongoose.Types.ObjectId.isValid(value))
-                            return Promise.reject('id is not in the correct format!')
+                            throw new Error('id is not in the correct format!')
                         else
-                            return Promise.resolve();
+                            return true
 
                     })
             ]
-            break;
+            break
         default:
             console.log(`validation for ${method} is unavailable`)
-            break;
+            break
     }
 }
 
