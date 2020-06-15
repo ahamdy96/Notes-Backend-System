@@ -13,7 +13,7 @@ Starting Notes App on localhost is quite simple.
 * Docker and Docker Compose to run docker images
 * NPM to install dependencies
 
-### Installing
+### Running
 
 Open a terminal or a windows poershell window and type the following commands
 
