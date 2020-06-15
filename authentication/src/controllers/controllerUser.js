@@ -20,7 +20,7 @@ const checkValidation = async (req) => {
 // a function to authentication user using passport depending on the required method
 const authenticate = async (req, res, next, method) => {
     return new Promise((resolve, reject) => {
-        passport.authenticate(method, { session: false }, (err, doc, info) => {
+        passport.authenticate(method, { session: false, scope: 'email' }, (err, doc, info) => {
             if (err) {
                 reject(err)
             } if (info) {
